@@ -1,15 +1,26 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
-// Iterative Fibonacci function
-unsigned long long int fibonacci_iterative(int n)
+#define MAX_N 100 // Maximum number of Fibonacci terms for memoization
+
+// Memoization arrays for both recursive and iterative versions
+unsigned long long int memo_r[MAX_N]; // For recursive
+unsigned long long int memo_i[MAX_N]; // For iterative
+
+// Recursive Fibonacci function (without memoization)
+unsigned long long int fib_wrapper_recursive(int n)
 {
-   if (n > 93)
-   {
-      printf("Overflow: The largest Fibonacci number that can be accurately represented is F(93).\n");
-      exit(1); // Exit if the number exceeds the limit
-   }
+   if (n == 1)
+      return 0; // Special case: F(1) = 0
+   if (n == 2)
+      return 1; // Special case: F(2) = 1
+   return fib_wrapper_recursive(n - 1) + fib_wrapper_recursive(n - 2);
+}
 
+// Iterative Fibonacci function (without memoization)
+unsigned long long int fib_wrapper_iterative(int n)
+{
    if (n == 1)
       return 0; // Special case: F(1) = 0
    if (n == 2)
@@ -25,21 +36,34 @@ unsigned long long int fibonacci_iterative(int n)
    return b;
 }
 
-// Recursive Fibonacci function
-unsigned long long int fibonacci_recursive(int n)
+// Recursive Fibonacci function with memoization
+unsigned long long int fib_r(int n)
 {
-   if (n > 50)
-   {
-      printf("Recursive method: Taking too long for large inputs.\n");
-      exit(1); // Exit if the input is too large for recursion
-   }
-
+   // Base cases
    if (n == 1)
-      return 0; // Special case: F(1) = 0
+      return 0;
    if (n == 2)
-      return 1; // Special case: F(2) = 1
+      return 1;
 
-   return fibonacci_recursive(n - 1) + fibonacci_recursive(n - 2);
+   // Check if the result is already memoized
+   if (memo_r[n] != -1)
+      return memo_r[n];
+
+   // Calculate and memoize the result
+   memo_r[n] = fib_r(n - 1) + fib_r(n - 2);
+   return memo_r[n];
+}
+
+// Iterative Fibonacci function with memoization
+unsigned long long int fib_i(int n)
+{
+   // Check if result is already memoized
+   if (memo_i[n] != -1)
+      return memo_i[n];
+
+   // Otherwise, calculate and memoize the result
+   memo_i[n] = fib_wrapper_iterative(n);
+   return memo_i[n];
 }
 
 int main(int argc, char *argv[])
@@ -50,10 +74,18 @@ int main(int argc, char *argv[])
       return 1;
    }
 
+   // Initialize memoization arrays with -1 (indicating uncalculated results)
+   for (int i = 0; i < MAX_N; i++)
+   {
+      memo_r[i] = -1;
+      memo_i[i] = -1;
+   }
+
    int input_num = atoi(argv[1]);
    char method = argv[2][0];
    char *filename = argv[3];
 
+   // Open the file and read the integer
    FILE *file = fopen(filename, "r");
    if (file == NULL)
    {
@@ -68,14 +100,19 @@ int main(int argc, char *argv[])
    int N = input_num + file_num;
 
    unsigned long long int result;
+   clock_t start_time, end_time;
+   double time_taken;
+
+   // Start the timer
+   start_time = clock();
 
    if (method == 'i')
    {
-      result = fibonacci_iterative(N);
+      result = fib_i(N); // Call the memoized iterative version
    }
    else if (method == 'r')
    {
-      result = fibonacci_recursive(N);
+      result = fib_r(N); // Call the memoized recursive version
    }
    else
    {
@@ -83,6 +120,11 @@ int main(int argc, char *argv[])
       return 1;
    }
 
+   // End the timer
+   end_time = clock();
+   time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+   // Output the Fibonacci number and the time taken
    printf("%llu\n", result);
 
    return 0;
