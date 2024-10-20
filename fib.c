@@ -2,29 +2,29 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define MAX_N 100 // Maximum number of Fibonacci terms for memoization
+#define MAX_N 100
 
-// Memoization arrays for both recursive and iterative versions
+
 unsigned long long int memo_r[MAX_N]; // For recursive
 unsigned long long int memo_i[MAX_N]; // For iterative
 
-// Recursive Fibonacci function (without memoization)
+// Recursive Fibonacci function without memoization
 unsigned long long int fib_wrapper_recursive(int n)
 {
    if (n == 1)
-      return 0; // Special case: F(1) = 0
+      return 0; 
    if (n == 2)
-      return 1; // Special case: F(2) = 1
+      return 1; 
    return fib_wrapper_recursive(n - 1) + fib_wrapper_recursive(n - 2);
 }
 
-// Iterative Fibonacci function (without memoization)
+// Iterative Fibonacci function without memoization
 unsigned long long int fib_wrapper_iterative(int n)
 {
    if (n == 1)
-      return 0; // Special case: F(1) = 0
+      return 0; 
    if (n == 2)
-      return 1; // Special case: F(2) = 1
+      return 1; 
 
    unsigned long long int a = 0, b = 1, temp;
    for (int i = 3; i <= n; i++)
@@ -45,7 +45,7 @@ unsigned long long int fib_r(int n)
    if (n == 2)
       return 1;
 
-   // Check if the result is already memoized
+   
    if (memo_r[n] != -1)
       return memo_r[n];
 
@@ -57,11 +57,11 @@ unsigned long long int fib_r(int n)
 // Iterative Fibonacci function with memoization
 unsigned long long int fib_i(int n)
 {
-   // Check if result is already memoized
+   
    if (memo_i[n] != -1)
       return memo_i[n];
 
-   // Otherwise, calculate and memoize the result
+   
    memo_i[n] = fib_wrapper_iterative(n);
    return memo_i[n];
 }
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
       return 1;
    }
 
-   // Initialize memoization arrays with -1 (indicating uncalculated results)
+   // Initialize memoization arrays 
    for (int i = 0; i < MAX_N; i++)
    {
       memo_r[i] = -1;
@@ -108,11 +108,11 @@ int main(int argc, char *argv[])
 
    if (method == 'i')
    {
-      result = fib_i(N); // Call the memoized iterative version
+      result = fib_i(N); 
    }
    else if (method == 'r')
    {
-      result = fib_r(N); // Call the memoized recursive version
+      result = fib_r(N); 
    }
    else
    {
